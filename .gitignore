@@ -1,0 +1,14 @@
+/.classpath
+/.project
+/.settings/
+/db/
+/target/
+/log/
+src/main/.idea/
+src/main/webapp/.idea
+src/main/webapp/ui/.idea
+src/main/resources/properties/dev/*
+.idea/
+*.iml
+
+
