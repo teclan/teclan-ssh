@@ -235,7 +235,7 @@ public class SSHClient {
                         continue;
                     }
 
-                    String s = src+"/"+nameString;
+                    String s = tmp+"/"+nameString;
                     String d = dst+"/"+nameString;
 
                     try{
