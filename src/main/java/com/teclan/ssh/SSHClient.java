@@ -182,6 +182,7 @@ public class SSHClient {
                 channelSftp.connect();
             }
 
+            String sFileName = new File(src).getName();
             if(src.endsWith("/")){
                 try{
                     channelSftp.cd(src);
@@ -196,6 +197,41 @@ public class SSHClient {
                 while (it.hasNext()) {
                     String nameString = ((ChannelSftp.LsEntry) it.next()).getFilename();
                     if (".".equals(nameString) || "..".equals(nameString)) {
+                        continue;
+                    }
+
+                    String s = src+"/"+nameString;
+                    String d = dst+"/"+nameString;
+
+                    try{
+                        channelSftp.cd(s);
+                        s += "/";
+                        download(s,d,monitor);
+                    }catch (Exception e){
+                        downloanSingleFile(s,d,monitor);
+                    }
+                }
+            }else if(sFileName.contains("*")){
+                String tmp="";
+                try{
+                    tmp = new File(src).getParent()+"/".replace("\\","/");
+                    tmp = tmp.replace("\\","/");
+                    channelSftp.cd(tmp);
+                }catch (Exception e){
+                    LOGGER.error(e.getMessage(),e);
+                    throw new Exception(String.format("目标机器不存在指定路径:%s",tmp));
+                }
+                new File(dst).mkdirs();
+                Vector filesName = channelSftp.ls(src);
+                Iterator it = filesName.iterator();
+                while (it.hasNext()) {
+                    String nameString = ((ChannelSftp.LsEntry) it.next()).getFilename();
+                    if (".".equals(nameString) || "..".equals(nameString)) {
+                        continue;
+                    }
+
+                    String fileNamePrefix = sFileName.substring(0,sFileName.indexOf("*"));
+                    if(!nameString.contains(fileNamePrefix)){
                         continue;
                     }
 
