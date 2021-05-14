@@ -224,6 +224,12 @@ public class SSHClient {
                 new File(dst).mkdirs();
                 Vector filesName = channelSftp.ls(src);
                 Iterator it = filesName.iterator();
+
+                if(!it.hasNext()){
+                    throw new Exception(String.format("目标机器不存在指定路径:%s",tmp));
+                }
+
+
                 while (it.hasNext()) {
                     String nameString = ((ChannelSftp.LsEntry) it.next()).getFilename();
                     if (".".equals(nameString) || "..".equals(nameString)) {
