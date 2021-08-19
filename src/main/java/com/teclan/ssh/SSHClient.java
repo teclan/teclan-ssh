@@ -175,11 +175,11 @@ public class SSHClient {
                for(int i=parents.size()-1;i>=0;i--){
                   String dir = parents.get(i).replace("\\","/");
                    try{
-                       LOGGER.info("正在进入目录:{} ...",dir);
+                       LOGGER.debug("正在进入目录:{} ...",dir);
                        channelSftp.cd(dir);
                    }catch (Exception e){
                        try {
-                           LOGGER.info("目录:{} 不存在，即将创建...", dir);
+                           LOGGER.debug("目录:{} 不存在，即将创建...", dir);
                            channelSftp.mkdir(dir);
                        }catch (Exception e1){
                            LOGGER.error(e.getMessage(),e);
