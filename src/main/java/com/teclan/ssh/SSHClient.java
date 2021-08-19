@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 public class SSHClient {
@@ -150,11 +152,31 @@ public class SSHClient {
             }
 
             if(dst.endsWith("/")){
-                try{
-                    channelSftp.cd(dst);
-                }catch (Exception e){
-                    channelSftp.mkdir(dst);
+//                try{
+//                    channelSftp.cd(dst);
+//                }catch (Exception e){
+//                    channelSftp.mkdir(dst);
+//                }
+
+                List<String> parents = new ArrayList<String>();
+                File dstFile = new File(dst);
+
+                while (dstFile.getParentFile()!=null){
+                    parents.add(dstFile.getParent());
+                    dstFile = dstFile.getParentFile();
                 }
+
+               for(int i=parents.size()-1;i>0;i--){
+                  String dir = parents.get(i);
+                   try{
+                       LOGGER.info("正在检查目录:{} ...",dir);
+                       channelSftp.cd(dir);
+                   }catch (Exception e){
+                       LOGGER.info("目录:{} 不存在，即将创建...",dir);
+                       channelSftp.mkdir(dir);
+                   }
+               }
+
                 dst += new File(src).getName();
             }
             channelSftp.put(src, dst,monitor,channelSftp.OVERWRITE);
