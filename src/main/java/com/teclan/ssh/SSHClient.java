@@ -159,21 +159,31 @@ public class SSHClient {
 //                }
 
                 List<String> parents = new ArrayList<String>();
-                File dstFile = new File(dst);
+                dst = dst.replace("\\","/");
 
-                while (dstFile.getParentFile()!=null){
-                    parents.add(dstFile.getParent());
-                    dstFile = dstFile.getParentFile();
+                String tmp = dst;
+                int index = dst.length();
+                while (index>0){
+                    index = tmp.lastIndexOf("/");
+                    tmp = tmp.substring(0,index);
+                    if("".equals(tmp.trim())){
+                        continue;
+                    }
+                    parents.add(tmp);
                 }
 
-               for(int i=parents.size()-1;i>0;i--){
-                  String dir = parents.get(i);
+               for(int i=parents.size()-1;i>=0;i--){
+                  String dir = parents.get(i).replace("\\","/");
                    try{
-                       LOGGER.info("正在检查目录:{} ...",dir);
+                       LOGGER.info("正在进入目录:{} ...",dir);
                        channelSftp.cd(dir);
                    }catch (Exception e){
-                       LOGGER.info("目录:{} 不存在，即将创建...",dir);
-                       channelSftp.mkdir(dir);
+                       try {
+                           LOGGER.info("目录:{} 不存在，即将创建...", dir);
+                           channelSftp.mkdir(dir);
+                       }catch (Exception e1){
+                           LOGGER.error(e.getMessage(),e);
+                       }
                    }
                }
 
